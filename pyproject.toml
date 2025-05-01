@@ -1,0 +1,19 @@
+[project]
+name = "ok-subprocess-util"
+version = "0.1"
+description = "Minor utilities and wrappers for the subprocess module"
+readme = "README.md"
+authors = [{ name = "Dan Egnor", email="egnor@ofb.net" }]
+requires-python = ">=3.9"
+dependencies = []
+
+[project.optional-dependencies]
+dev = ["pytest"]
+
+[project.urls]
+Homepage = "https://github.com/egnor/ok-py-subprocess-util#readme"
+Repository = "https://github.com/egnor/ok-py-subprocess-util.git"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
