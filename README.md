@@ -1,2 +1,2 @@
-# ok-py-subprocess-util
-Minor utilities and wrappers for the Python subprocess library
+# ok-py-subprocess-defaults
+Minor wrapper for Python subprocess.run() with defaults and logging

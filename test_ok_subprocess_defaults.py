@@ -1,5 +1,5 @@
 """
-Test for ok_subprocess_util.py.
+Test for ok_subprocess_defaults.py.
 """
 
 import os

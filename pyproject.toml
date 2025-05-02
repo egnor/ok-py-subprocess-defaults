@@ -1,7 +1,7 @@
 [project]
-name = "ok-subprocess-util"
+name = "ok-subprocess-defaults"
 version = "0.1"
-description = "Minor utilities and wrappers for the subprocess module"
+description = "Minor wrapper for subprocess.run() with defaults and logging"
 readme = "README.md"
 authors = [{ name = "Dan Egnor", email="egnor@ofb.net" }]
 requires-python = ">=3.9"
@@ -11,8 +11,8 @@ dependencies = []
 dev = ["pytest"]
 
 [project.urls]
-Homepage = "https://github.com/egnor/ok-py-subprocess-util#readme"
-Repository = "https://github.com/egnor/ok-py-subprocess-util.git"
+Homepage = "https://github.com/egnor/ok-py-subprocess-defaults#readme"
+Repository = "https://github.com/egnor/ok-py-subprocess-defaults.git"
 
 [build-system]
 requires = ["hatchling"]
