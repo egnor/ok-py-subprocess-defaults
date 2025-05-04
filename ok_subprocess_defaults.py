@@ -31,23 +31,20 @@ class SubprocessDefaults:
         """Wraps subprocess.run (with args directly listed), logging the
         command (per log_level) and applying defaults from this object."""
 
-        args = [_path_str(a) for a in [*self.args_prefix, *args]]
+        cwd = _path_str(self.cwd) if self.cwd else None
 
-        kw = {
-            "check": self.check,
-            "cwd": _path_str(self.cwd) if self.cwd else None,
-            "env": {
-                **os.environ,
-                **{ k: _path_str(v) for k, v in self.env.items() },
-            },
-            **kw,
-        }
+        env = None
+        if self.env:
+            env = { **os.environ, **self.env }
+            env = { k: _path_str(v) for k, v in env.items() if v is not None }
+
+        run_args = [_path_str(a) for a in [*self.args_prefix, *args]]
+        run_kw = { "check": self.check, "cwd": cwd, "env": env, **kw }
 
         if self.log_level and self.log_level > logging.NOTSET:
-            command_text = " ".join(shlex.quote(arg) for arg in args)
-            logging.log(self.log_level, "🐚 %s", command_text)
+            _log_command(self.log_level, run_args, run_kw)
 
-        return subprocess.run(args, **kw)
+        return subprocess.run(run_args, **run_kw)
 
     def stdout_text(self, *args, **kw):
         """Like run, but captures and directly returns stdout text."""
@@ -76,3 +73,43 @@ def _path_str(path_or_str):
     raise TypeError(
         f"Expected str or os.PathLike, got {path_or_str!r}"
     )
+
+
+def _log_command(log_level, args, kw):
+    parts_len = lambda parts: sum(len(p) for p in parts)
+    cd_parts = []
+    if new_cwd := kw.get("cwd"):
+        old_path = os.path.realpath(os.getcwd())
+        new_path = os.path.realpath(new_cwd)
+        if new_path != old_path:
+            try:
+                rel_path = os.path.relpath(new_path, old_path)
+                if len(rel_path) < len(new_path): new_path = rel_path
+            except ValueError: pass  # different drives on Windows
+            cd_parts = ["cd", shlex.quote(str(new_path)), "&&"]
+
+    env_parts = []
+    if new_env := kw.get("env"):
+        old_env = os.environ
+        repeats, updates = [], []
+        for k, new_v in new_env.items():
+            old_v = old_env.get(k)
+            v_quoted = shlex.quote(new_v) if new_v else ""
+            v_parts = new_v.split(old_v) if old_v else [new_v]
+            if len(v_parts) > 1:
+                v_parts_quoted = [shlex.quote(p) if p else "" for p in v_parts]
+                v_spliced = f"${{{k}}}".join(v_parts_quoted)
+                if len(v_spliced) < len(v_quoted): v_quoted = v_spliced
+
+            (repeats if old_v == new_v else updates).append(f"{k}={v_quoted}")
+
+        env_parts = updates
+        if del_keys := old_env.keys() - new_env.keys():
+            env_parts = ["env", *(f"-u{k}" for k in del_keys), *updates, "--"]
+            env_reset_parts = ["env -i", *repeats, *updates, "--"]
+            if parts_len(env_reset_parts) < parts_len(env_parts):
+                env_parts = env_reset_parts
+
+    command_text = " ".join(shlex.quote(arg) for arg in args)
+    log_parts = [*cd_parts, *env_parts, command_text]
+    logging.log(log_level, "🐚 %s", " ".join(log_parts))

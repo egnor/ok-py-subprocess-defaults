@@ -64,35 +64,46 @@ def test_cwd(tmp_path):
 
 def test_env():
     sub = ok_subprocess_defaults.SubprocessDefaults()
+    save_env = os.environ.copy()
 
     # default env uses os.environ
+    os.environ["TEST_SUBPROCESS_ENVIRON"] = "env value"
     assert sub.env == {}
     vars = sub.stdout_lines("env")
     assert vars == [f"{key}={value}" for key, value in os.environ.items()]
 
-    # env variables in defaults are added to os.environ
-    sub.env = {"TEST_SUBPROCESS_DEFAULTS": pathlib.Path("test value")}
+    # env in defaults are added to os.environ
+    sub.env = { "TEST_SUBPROCESS_DEFAULTS": pathlib.Path("added value") }
     vars = sub.stdout_lines("env")
     assert vars == [
         *(f"{key}={value}" for key, value in os.environ.items()),
-        "TEST_SUBPROCESS_DEFAULTS=test value",
+        "TEST_SUBPROCESS_DEFAULTS=added value",
+    ]
+
+    # env None values are deleted from os.environ
+    sub.env = { "TEST_SUBPROCESS_ENVIRON": None }
+    vars = sub.stdout_lines("env")
+    assert vars == [
+        f"{key}={value}" for key, value in os.environ.items()
+        if key != "TEST_SUBPROCESS_ENVIRON"
     ]
 
     # override entirely
-    vars = sub.stdout_lines("env", env={"TEST_SUBPROCESS_OVERRIDE": "value"})
+    vars = sub.stdout_lines("env", env={ "TEST_SUBPROCESS_OVERRIDE": "value" })
     assert vars == ["TEST_SUBPROCESS_OVERRIDE=value"]
 
+    os.environ.clear()
+    os.environ.update(save_env)
 
-def test_log_level(caplog):
+
+def test_logging_level(caplog):
     caplog.set_level(logging.DEBUG)
     sub = ok_subprocess_defaults.SubprocessDefaults()
 
-    # default logging at INFO with escaping
+    # default logging at INFO with argument escaping
     assert sub.log_level == logging.INFO
-    sub.run("echo", pathlib.Path("Hello"), "World!")
-    assert caplog.record_tuples == [
-        ("root", logging.INFO, "🐚 echo Hello 'World!'"),
-    ]
+    sub.run("echo", pathlib.Path("Hello"))
+    assert caplog.record_tuples == [("root", logging.INFO, "🐚 echo Hello")]
     caplog.clear()
 
     # change logging level
@@ -105,6 +116,77 @@ def test_log_level(caplog):
     sub.log_level = logging.NOTSET
     sub.run("echo", "No log")
     assert caplog.record_tuples == []
+
+    os.environ.clear()
+
+
+def test_logging_env(caplog):
+    caplog.set_level(logging.INFO)
+    sub = ok_subprocess_defaults.SubprocessDefaults()
+    save_env = os.environ.copy()
+
+    # environment variables are logged
+    sub.env = { "TEST_SUBPROCESS_DEFAULTS": "added value" }
+    sub.run("echo", "With env")
+    assert caplog.record_tuples == [(
+        "root", logging.INFO,
+        "🐚 TEST_SUBPROCESS_DEFAULTS='added value' echo 'With env'"
+    )]
+    caplog.clear()
+
+    # even logged if specified as an override
+    sub.run("echo", "Override env", env={ "TEST_SUBPROCESS_OVERRIDE": "value" })
+    assert caplog.record_tuples == [(
+        "root", logging.INFO,
+        "🐚 env -i TEST_SUBPROCESS_OVERRIDE=value -- echo 'Override env'"
+    )]
+    sub.env = {}
+    caplog.clear()
+
+    # small additions to long values are represented efficiently
+    os.environ["TEST_SUBENV"] = "test-test-long-value"
+    sub.env = { "TEST_SUBENV": "foo-test-test-long-value-bar" }
+    sub.run("echo", "With env")
+    assert caplog.record_tuples == [(
+        "root", logging.INFO,
+        "🐚 TEST_SUBENV=foo-${TEST_SUBENV}-bar echo 'With env'"
+    )]
+    sub.env = {}
+    caplog.clear()
+
+    os.environ.clear()
+    os.environ.update(save_env)
+
+
+def test_logging_cwd(caplog, tmp_path):
+    caplog.set_level(logging.INFO)
+    sub = ok_subprocess_defaults.SubprocessDefaults()
+    save_cwd = pathlib.Path.cwd()
+
+    # cwd changes are logged
+    sub.cwd = tmp_path
+    sub.run("echo", "Hello")
+    assert caplog.record_tuples == [
+        ("root", logging.INFO, f"🐚 cd {tmp_path} && echo Hello"),
+    ]
+    caplog.clear()
+
+    os.chdir(tmp_path / "..")
+    sub.run("echo", "Hello")
+    assert caplog.record_tuples == [
+        ("root", logging.INFO, f"🐚 cd {tmp_path.name} && echo Hello"),
+    ]
+    caplog.clear()
+
+    os.chdir(tmp_path)
+    sub.cwd = pathlib.Path(tmp_path.parent)
+    sub.run("echo", "Hello")
+    assert caplog.record_tuples == [
+        ("root", logging.INFO, f"🐚 cd .. && echo Hello"),
+    ]
+    caplog.clear()
+
+    os.chdir(save_cwd)
 
 
 def test_stdout_text():
@@ -123,7 +205,7 @@ def test_copy():
     sub.check = False
     sub.args_prefix = ["args", "prefix"]
     sub.cwd = pathlib.Path("/test")
-    sub.env = {"TEST": pathlib.Path("foo/bar")}
+    sub.env = { "TEST": pathlib.Path("foo/bar") }
     sub.log_level = logging.DEBUG
 
     copy = sub.copy()
