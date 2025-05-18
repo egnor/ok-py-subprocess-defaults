@@ -15,13 +15,11 @@ But, this is my wrapper, and it does these things:
 - Lets you set defaults for `cwd` and `env` (added to `os.environ`)
 - Logs the commands run (with proper escaping) for transparency
 - Checks command return (`check=True`)
-- Uses explicit argument vectors (`shell=False`), no messy escaping issues
-- Has easy-peasy functions to capture stdout as text or lines
-- Pass-through (or override) for all `subprocess.run` arguments
+- Uses explicit argument vectors (`shell=False`) to avoid escaping issues
+- Includes easy-peasy wrapper functions to capture stdout as text or lines
+- Accepts and passes through all `subprocess.run` arguments
 
-Collectively, this is what I want for subprocesses -- tiny tweaks to
-`subprocess.run` (or actually `subprocess.check_call`) for one-liner brevity.
-Your mileage almost certainly will vary.
+Collectively, this is what I want for subprocesses -- tiny tweaks to `subprocess.run` (or actually `subprocess.check_call`) for one-liner brevity. Your mileage almost certainly will vary.
 
 # Usage
 
@@ -40,7 +38,7 @@ logging.basicConfig(level=logging.INFO)  # to show the logging
 ...
 sub.run("echo", "Hello World!")
 ```
-Note that command arguments are individual function arguments; otherwise, arguments are the same as [subprocess.run](https://docs.python.org/3/library/subprocess.html#subprocess.run) including keyword arguments and return value.
+Note that command arguments are individual function arguments; otherwise, usage is the same as [subprocess.run](https://docs.python.org/3/library/subprocess.html#subprocess.run) including keyword arguments and return value.
 
 The logging output looks like this:
 ```
