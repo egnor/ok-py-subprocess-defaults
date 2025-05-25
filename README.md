@@ -1,4 +1,4 @@
-# ok-py-subprocess-defaults
+# ok-subprocess-defaults
 
 Trivial wrapper for [Python subprocess.run](https://docs.python.org/3/library/subprocess.html#subprocess.run) with defaults and logging.
 
@@ -24,7 +24,7 @@ Collectively, this is what I want for subprocesses -- tiny tweaks to `subprocess
 # Usage
 
 Add this package as a dependency:
-- `pip install ok-py-subprocess-defaults`
+- `pip install ok-subprocess-defaults`
 - OR just copy `ok_subprocess_defaults.py` (it has no dependencies)
 
 Import the module, create an `ok_subprocess_defaults.SubprocessDefaults` object, and use it to run commands:
