@@ -1,4 +1,4 @@
-# ok-subprocess-defaults
+# ok-subprocess-defaults for Python
 
 Trivial wrapper for [Python subprocess.run](https://docs.python.org/3/library/subprocess.html#subprocess.run) with defaults and logging.
 
