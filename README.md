@@ -21,7 +21,7 @@ But, this is my wrapper, and it does these things:
   arguments to strings
 - Passes through all `subprocess.run` keyword arguments
 
-Collectively, this is what I want for subprocesses -- tiny tweaks to `subprocess.run` (or actually `subprocess.check_call`) for one-liner brevity. Your mileage almost certainly will vary.
+Collectively, this is what I want for subprocesses -- tiny tweaks to `subprocess.run` (or actually `subprocess.check_call`) to make it easy to [never](https://databio.org/posts/shell_scripts.html) [write](https://news.ycombinator.com/item?id=26682981) [shell](https://samgrayson.me/essays/stop-writing-shell-scripts/) [scripts](https://pythonspeed.com/articles/shell-scripts/) [again](https://dev.to/taikedz/your-bash-scripts-are-rubbish-use-another-language-5dh7). Your mileage will almost certainly vary!
 
 # Usage
 
