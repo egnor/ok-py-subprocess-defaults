@@ -13,11 +13,13 @@ You probably won't want to use this. Just call `subprocess.run` directly (it's p
 
 But, this is my wrapper, and it does these things:
 - Lets you set defaults for `cwd` and `env` (added to `os.environ`)
-- Logs the commands run (with proper escaping) for transparency
-- Checks command return (`check=True`)
-- Uses explicit argument vectors (`shell=False`) to avoid escaping issues
+- Checks command return (`check=True`) by default
+- Uses explicit argument vectors (`shell=False`) by default
+- Logs commands (with proper escaping) for transparency
 - Includes easy-peasy wrapper functions to capture stdout as text or lines
-- Accepts and passes through all `subprocess.run` arguments
+- Converts [Path](https://docs.python.org/3/library/pathlib.html)-like
+  arguments to strings
+- Passes through all `subprocess.run` keyword arguments
 
 Collectively, this is what I want for subprocesses -- tiny tweaks to `subprocess.run` (or actually `subprocess.check_call`) for one-liner brevity. Your mileage almost certainly will vary.
 
@@ -50,7 +52,20 @@ Note that arguments are escaped so you can cut-and-paste the command.
 
 ## Configuring defaults
 
+`SubprocessDefaults` objects have public properties to set defaults for
+commands run through that object:
+- `args_prefix` (list of string or Path-like) - prepended to all commands run
+- `check` (bool) - default for subprocess `check` (default true)
+- `cwd` (string or Path-like) - default for subprocess `cwd` (default empty)
+- `env` (string dict) - merged with `os.environ` as default subprocess `env`
+- `log_level` (int) - level for command logging (default `logging.INFO`) 
+
 ## Capturing output
 
-If you want to do more specific output capture or processing, any keyword
-arguments passed to `run` are passed on to `subprocess.run`:
+`SubprocessDefaults` objects have some wrappers to the basic `.run` to
+capture output in convenient ways:
+- `.stdout_text(args, ...)` - returns captured stdout as a text string
+- `.stdout_lines(args, ...)` - returns captured stdout split into lines
+
+For more specific output capture or processing, keyword arguments passed to
+`run` or any of the wrappers above are passed on to `subprocess.run`.
