@@ -12,16 +12,15 @@ You probably won't want to use this. Just call `subprocess.run` directly (it's p
 - [python-shell](https://github.com/ATCode-space/python-shell) - another shell command runner
 
 But, this is my wrapper, and it does these things:
-- Lets you set defaults for `cwd` and `env` (added to `os.environ`)
 - Checks command return (`check=True`) by default
 - Uses explicit argument vectors (`shell=False`) by default
-- Logs commands (with proper escaping) for transparency
 - Includes easy-peasy wrapper functions to capture stdout as text or lines
-- Converts [Path](https://docs.python.org/3/library/pathlib.html)-like
-  arguments to strings
+- Logs all commands run, escaped for cut-and-paste rerunning
+- Lets you set defaults for `cwd` and `env` (merged with `os.environ`)
+- Converts [Path-like](https://docs.python.org/3/library/pathlib.html) arguments to strings
 - Passes through all `subprocess.run` keyword arguments
 
-Collectively, this is what I want for subprocesses -- tiny tweaks to `subprocess.run` (or actually `subprocess.check_call`) to make it easy to [never](https://databio.org/posts/shell_scripts.html) [write](https://news.ycombinator.com/item?id=26682981) [shell](https://samgrayson.me/essays/stop-writing-shell-scripts/) [scripts](https://pythonspeed.com/articles/shell-scripts/) [again](https://dev.to/taikedz/your-bash-scripts-are-rubbish-use-another-language-5dh7). Your mileage will almost certainly vary!
+Collectively, this is what I want for subprocesses -- tweaks to `subprocess.run` (or actually `subprocess.check_call`) to make it super easy to [never](https://databio.org/posts/shell_scripts.html) [write](https://news.ycombinator.com/item?id=26682981) [shell](https://samgrayson.me/essays/stop-writing-shell-scripts/) [scripts](https://pythonspeed.com/articles/shell-scripts/) [again](https://dev.to/taikedz/your-bash-scripts-are-rubbish-use-another-language-5dh7). Your mileage will almost certainly vary!
 
 # Usage
 
