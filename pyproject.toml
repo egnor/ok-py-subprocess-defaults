@@ -7,7 +7,7 @@ authors = [{ name = "Dan Egnor", email="egnor@ofb.net" }]
 requires-python = ">=3.9"
 dependencies = []
 
-[project.optional-dependencies]
+[dependency-groups]
 dev = ["pytest"]
 
 [project.urls]
