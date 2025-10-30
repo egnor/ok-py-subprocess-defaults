@@ -51,18 +51,16 @@ Note that arguments are escaped so you can cut-and-paste the command.
 
 ## Configuring defaults
 
-`SubprocessDefaults` objects have public properties to set defaults for
-commands run through that object:
-- `args_prefix` (list of string or Path-like) - prepended to all commands run
-- `check` (bool) - default for subprocess `check` (default true)
-- `cwd` (string or Path-like) - default for subprocess `cwd` (default empty)
-- `env` (string dict) - merged with `os.environ` as default subprocess `env`
-- `log_level` (int) - level for command logging (default `logging.INFO`) 
+`SubprocessDefaults` objects have properties that set defaults for `.run(...)`:
+- `.args_prefix` (list of string or Path-like) - prepended to all commands run
+- `.check` (bool) - default for `check` arg (default true)
+- `.cwd` (string or Path-like) - default for `cwd` arg (default empty)
+- `.env` (string dict) - merged with `os.environ` as default `env` arg
+- `.log_level` (int) - level for command logging (default `logging.INFO`) 
 
 ## Capturing output
 
-`SubprocessDefaults` objects have some wrappers to the basic `.run` to
-capture output in convenient ways:
+`SubprocessDefaults` objects have some utility wrappers to capture output:
 - `.stdout_text(args, ...)` - returns captured stdout as a text string
 - `.stdout_lines(args, ...)` - returns captured stdout split into lines
 
