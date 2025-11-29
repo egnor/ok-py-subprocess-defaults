@@ -8,12 +8,12 @@ urls.Homepage = "https://github.com/egnor/ok-py-subprocess-defaults#readme"
 urls.Repository = "https://github.com/egnor/ok-py-subprocess-defaults.git"
 version = "0.1"
 
-[dependency-groups]
-dev = ["mypy", "pytest", "ruff"]
-
 [build-system]
 build-backend = "uv_build"
 requires = ["uv_build>=0.9.13,<0.10.0"]
+
+[dependency-groups]
+dev = ["mypy", "pytest", "ruff"]
 
 [tool.mypy]
 exclude_gitignore = true
