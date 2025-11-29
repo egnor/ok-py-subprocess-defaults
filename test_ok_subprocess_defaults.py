@@ -182,7 +182,7 @@ def test_logging_cwd(caplog, tmp_path):
     sub.cwd = pathlib.Path(tmp_path.parent)
     sub.run("echo", "Hello")
     assert caplog.record_tuples == [
-        ("root", logging.INFO, f"🐚 cd .. && echo Hello"),
+        ("root", logging.INFO, "🐚 cd .. && echo Hello"),
     ]
     caplog.clear()
 

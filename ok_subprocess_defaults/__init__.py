@@ -76,7 +76,6 @@ def _path_str(path_or_str):
 
 
 def _log_command(log_level, args, kw):
-    parts_len = lambda parts: sum(len(p) for p in parts)
     cd_parts = []
     if new_cwd := kw.get("cwd"):
         old_path = os.path.realpath(os.getcwd())
@@ -84,8 +83,10 @@ def _log_command(log_level, args, kw):
         if new_path != old_path:
             try:
                 rel_path = os.path.relpath(new_path, old_path)
-                if len(rel_path) < len(new_path): new_path = rel_path
-            except ValueError: pass  # different drives on Windows
+                if len(rel_path) < len(new_path):
+                    new_path = rel_path
+            except ValueError:
+                pass  # different drives on Windows
             cd_parts = ["cd", shlex.quote(str(new_path)), "&&"]
 
     env_parts = []
@@ -99,9 +100,13 @@ def _log_command(log_level, args, kw):
             if len(v_parts) > 1:
                 v_parts_quoted = [shlex.quote(p) if p else "" for p in v_parts]
                 v_spliced = f"${{{k}}}".join(v_parts_quoted)
-                if len(v_spliced) < len(v_quoted): v_quoted = v_spliced
+                if len(v_spliced) < len(v_quoted):
+                    v_quoted = v_spliced
 
             (repeats if old_v == new_v else updates).append(f"{k}={v_quoted}")
+
+        def parts_len(parts):
+            return sum(len(p) for p in parts)
 
         env_parts = updates
         if del_keys := old_env.keys() - new_env.keys():

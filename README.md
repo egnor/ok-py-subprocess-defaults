@@ -26,7 +26,7 @@ Collectively, this is what I want for subprocesses -- tweaks to `subprocess.run`
 
 Add this package as a dependency:
 - `pip install ok-subprocess-defaults`
-- OR just copy `ok_subprocess_defaults.py` (it has no dependencies)
+- OR just copy the `ok_subprocess_defaults/` module (it has no dependencies)
 
 Import the module, create an `ok_subprocess_defaults.SubprocessDefaults` object, and use it to run commands:
 ```python
