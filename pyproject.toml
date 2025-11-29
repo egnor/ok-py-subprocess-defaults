@@ -3,7 +3,7 @@ authors = [{ name = "Dan Egnor", email="egnor@ofb.net" }]
 description = "Minor wrapper for subprocess.run() with defaults and logging"
 name = "ok-subprocess-defaults"
 readme = "README.md"
-requires-python = ">=3.9"
+requires-python = ">=3.10"
 urls.Homepage = "https://github.com/egnor/ok-py-subprocess-defaults#readme"
 urls.Repository = "https://github.com/egnor/ok-py-subprocess-defaults.git"
 version = "0.1"
