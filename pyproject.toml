@@ -13,7 +13,10 @@ build-backend = "uv_build"
 requires = ["uv_build>=0.9.13,<0.10.0"]
 
 [dependency-groups]
-dev = ["mypy", "pytest", "ruff"]
+dev = ["black", "mypy", "pytest", "ruff"]
+
+[tool.black]
+line-length = 80
 
 [tool.mypy]
 exclude_gitignore = true

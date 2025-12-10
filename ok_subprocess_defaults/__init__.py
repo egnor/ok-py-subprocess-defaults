@@ -8,6 +8,7 @@ import os
 import shlex
 import subprocess
 
+
 @dataclasses.dataclass
 class SubprocessDefaults:
     """Default values for subprocess.run, plus some convenience methods."""
@@ -35,11 +36,11 @@ class SubprocessDefaults:
 
         env = None
         if self.env:
-            env = { **os.environ, **self.env }
-            env = { k: _path_str(v) for k, v in env.items() if v is not None }
+            env = {**os.environ, **self.env}
+            env = {k: _path_str(v) for k, v in env.items() if v is not None}
 
         run_args = [_path_str(a) for a in [*self.args_prefix, *args]]
-        run_kw = { "check": self.check, "cwd": cwd, "env": env, **kw }
+        run_kw = {"check": self.check, "cwd": cwd, "env": env, **kw}
 
         if self.log_level and self.log_level > logging.NOTSET:
             _log_command(self.log_level, run_args, run_kw)
@@ -49,7 +50,7 @@ class SubprocessDefaults:
     def stdout_text(self, *args, **kw):
         """Like run, but captures and directly returns stdout text."""
 
-        kw = { "stdout": subprocess.PIPE, "text": True, **kw }
+        kw = {"stdout": subprocess.PIPE, "text": True, **kw}
         return self.run(*args, **kw).stdout
 
     def stdout_lines(self, *args, **kw):
@@ -70,9 +71,7 @@ def _path_str(path_or_str):
         return path_or_str
     if isinstance(path_or_str, os.PathLike):
         return str(path_or_str)
-    raise TypeError(
-        f"Expected str or os.PathLike, got {path_or_str!r}"
-    )
+    raise TypeError(f"Expected str or os.PathLike, got {path_or_str!r}")
 
 
 def _log_command(log_level, args, kw):

@@ -73,7 +73,7 @@ def test_env():
     assert vars == [f"{key}={value}" for key, value in os.environ.items()]
 
     # env in defaults are added to os.environ
-    sub.env = { "TEST_SUBPROCESS_DEFAULTS": pathlib.Path("added value") }
+    sub.env = {"TEST_SUBPROCESS_DEFAULTS": pathlib.Path("added value")}
     vars = sub.stdout_lines("env")
     assert vars == [
         *(f"{key}={value}" for key, value in os.environ.items()),
@@ -81,15 +81,16 @@ def test_env():
     ]
 
     # env None values are deleted from os.environ
-    sub.env = { "TEST_SUBPROCESS_ENVIRON": None }
+    sub.env = {"TEST_SUBPROCESS_ENVIRON": None}
     vars = sub.stdout_lines("env")
     assert vars == [
-        f"{key}={value}" for key, value in os.environ.items()
+        f"{key}={value}"
+        for key, value in os.environ.items()
         if key != "TEST_SUBPROCESS_ENVIRON"
     ]
 
     # override entirely
-    vars = sub.stdout_lines("env", env={ "TEST_SUBPROCESS_OVERRIDE": "value" })
+    vars = sub.stdout_lines("env", env={"TEST_SUBPROCESS_OVERRIDE": "value"})
     assert vars == ["TEST_SUBPROCESS_OVERRIDE=value"]
 
     os.environ.clear()
@@ -126,31 +127,40 @@ def test_logging_env(caplog):
     save_env = os.environ.copy()
 
     # environment variables are logged
-    sub.env = { "TEST_SUBPROCESS_DEFAULTS": "added value" }
+    sub.env = {"TEST_SUBPROCESS_DEFAULTS": "added value"}
     sub.run("echo", "With env")
-    assert caplog.record_tuples == [(
-        "root", logging.INFO,
-        "🐚 TEST_SUBPROCESS_DEFAULTS='added value' echo 'With env'"
-    )]
+    assert caplog.record_tuples == [
+        (
+            "root",
+            logging.INFO,
+            "🐚 TEST_SUBPROCESS_DEFAULTS='added value' echo 'With env'",
+        )
+    ]
     caplog.clear()
 
     # even logged if specified as an override
-    sub.run("echo", "Override env", env={ "TEST_SUBPROCESS_OVERRIDE": "value" })
-    assert caplog.record_tuples == [(
-        "root", logging.INFO,
-        "🐚 env -i TEST_SUBPROCESS_OVERRIDE=value -- echo 'Override env'"
-    )]
+    sub.run("echo", "Override env", env={"TEST_SUBPROCESS_OVERRIDE": "value"})
+    assert caplog.record_tuples == [
+        (
+            "root",
+            logging.INFO,
+            "🐚 env -i TEST_SUBPROCESS_OVERRIDE=value -- echo 'Override env'",
+        )
+    ]
     sub.env = {}
     caplog.clear()
 
     # small additions to long values are represented efficiently
     os.environ["TEST_SUBENV"] = "test-test-long-value"
-    sub.env = { "TEST_SUBENV": "foo-test-test-long-value-bar" }
+    sub.env = {"TEST_SUBENV": "foo-test-test-long-value-bar"}
     sub.run("echo", "With env")
-    assert caplog.record_tuples == [(
-        "root", logging.INFO,
-        "🐚 TEST_SUBENV=foo-${TEST_SUBENV}-bar echo 'With env'"
-    )]
+    assert caplog.record_tuples == [
+        (
+            "root",
+            logging.INFO,
+            "🐚 TEST_SUBENV=foo-${TEST_SUBENV}-bar echo 'With env'",
+        )
+    ]
     sub.env = {}
     caplog.clear()
 
@@ -205,7 +215,7 @@ def test_copy():
     sub.check = False
     sub.args_prefix = ["args", "prefix"]
     sub.cwd = pathlib.Path("/test")
-    sub.env = { "TEST": pathlib.Path("foo/bar") }
+    sub.env = {"TEST": pathlib.Path("foo/bar")}
     sub.log_level = logging.DEBUG
 
     copy = sub.copy()
