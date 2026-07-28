@@ -3,15 +3,16 @@ Test for ok_subprocess_runner.py.
 """
 
 import logging
-import ok_subprocess_runner
 import os
 import pathlib
 import pytest
 import subprocess
 
+from ok_subprocess_runner import SubprocessRunner
+
 
 def test_args_prefix():
-    sub = ok_subprocess_runner.SubprocessRunner()
+    sub = SubprocessRunner()
 
     # default args_prefix is empty
     assert sub.args_prefix == []
@@ -23,7 +24,7 @@ def test_args_prefix():
 
 
 def test_check():
-    sub = ok_subprocess_runner.SubprocessRunner()
+    sub = SubprocessRunner()
 
     # check=True by default
     assert sub.check is True
@@ -43,7 +44,7 @@ def test_check():
 
 
 def test_cwd(tmp_path):
-    sub = ok_subprocess_runner.SubprocessRunner()
+    sub = SubprocessRunner()
 
     # defualt cwd is inherited
     assert sub.cwd == ""
@@ -63,7 +64,7 @@ def test_cwd(tmp_path):
 
 
 def test_env():
-    sub = ok_subprocess_runner.SubprocessRunner()
+    sub = SubprocessRunner()
     save_env = os.environ.copy()
 
     # default env uses os.environ
@@ -99,7 +100,7 @@ def test_env():
 
 def test_logging_level(caplog):
     caplog.set_level(logging.DEBUG)
-    sub = ok_subprocess_runner.SubprocessRunner()
+    sub = SubprocessRunner()
 
     # default logging at INFO with argument escaping
     assert sub.log_level == logging.INFO
@@ -123,7 +124,7 @@ def test_logging_level(caplog):
 
 def test_logging_env(caplog):
     caplog.set_level(logging.INFO)
-    sub = ok_subprocess_runner.SubprocessRunner()
+    sub = SubprocessRunner()
     save_env = os.environ.copy()
 
     # environment variables are logged
@@ -170,7 +171,7 @@ def test_logging_env(caplog):
 
 def test_logging_cwd(caplog, tmp_path):
     caplog.set_level(logging.INFO)
-    sub = ok_subprocess_runner.SubprocessRunner()
+    sub = SubprocessRunner()
     save_cwd = pathlib.Path.cwd()
 
     # cwd changes are logged
@@ -200,18 +201,18 @@ def test_logging_cwd(caplog, tmp_path):
 
 
 def test_stdout_text():
-    sub = ok_subprocess_runner.SubprocessRunner()
+    sub = SubprocessRunner()
     assert sub.stdout_text("echo", "Hello World!") == "Hello World!\n"
 
 
 def test_stdout_lines():
-    sub = ok_subprocess_runner.SubprocessRunner()
+    sub = SubprocessRunner()
     assert sub.stdout_lines("echo", "Hello World!") == ["Hello World!"]
     assert sub.stdout_lines("echo", "Hello\nWorld!") == ["Hello", "World!"]
 
 
 def test_copy():
-    sub = ok_subprocess_runner.SubprocessRunner()
+    sub = SubprocessRunner()
     sub.check = False
     sub.args_prefix = ["args", "prefix"]
     sub.cwd = pathlib.Path("/test")

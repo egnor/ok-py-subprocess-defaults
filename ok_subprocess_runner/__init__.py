@@ -9,11 +9,26 @@ import shlex
 import subprocess
 
 
+def run(*args, **kw):
+    """Runs a subprocess using `SubprocessRunner()` defaults."""
+    return SubprocessRunner()(*args, **kw)
+
+
+def stdout_text(*args, **kw) -> str:
+    """Returns subprocess stdout using `SubprocessRunner()` defaults."""
+    return SubprocessRunner().stdout_text(*args, **kw)
+
+
+def stdout_lines(*args, **kw) -> list[str]:
+    """Returns subprocess stdout lines using `SubprocessRunner()` defaults."""
+    return SubprocessRunner().stdout_lines(*args, **kw)
+
+
 @dataclasses.dataclass
 class SubprocessRunner:
     """Wrapper for subprocess.run, plus some convenience methods.
 
-    sub = SubprocessRunner()
+    sub = ok_subprocess_runner.SubprocessRunner()
     sub("echo", "Hello", "World")
     """
 
@@ -51,18 +66,18 @@ class SubprocessRunner:
 
         return subprocess.run(run_args, **run_kw)
 
-    def stdout_text(self, *args, **kw):
+    def stdout_text(self, *args, **kw) -> str:
         """Like run, but captures and directly returns stdout text."""
 
         kw = {"stdout": subprocess.PIPE, "text": True, **kw}
         return self(*args, **kw).stdout
 
-    def stdout_lines(self, *args, **kw):
+    def stdout_lines(self, *args, **kw) -> list[str]:
         """Like stdout_text, but splits the text into lines."""
 
         return self.stdout_text(*args, **kw).splitlines()
 
-    def copy(self):
+    def copy(self) -> "SubprocessRunner":
         """Returns a copy of this object with the same defaults."""
 
         return dataclasses.replace(
@@ -78,7 +93,7 @@ def _path_str(path_or_str: os.PathLike | str) -> str:
     raise TypeError(f"Expected str or os.PathLike, got {path_or_str!r}")
 
 
-def _log_command(log_level, args, kw):
+def _log_command(log_level: int, args: list[str], kw) -> None:
     cd_parts = []
     if new_cwd := kw.get("cwd"):
         old_path = os.path.realpath(os.getcwd())
@@ -95,7 +110,8 @@ def _log_command(log_level, args, kw):
     env_parts = []
     if new_env := kw.get("env"):
         old_env = os.environ
-        repeats, updates = [], []
+        repeats: list[str] = []
+        updates: list[str] = []
         for k, new_v in new_env.items():
             old_v = old_env.get(k)
             v_quoted = shlex.quote(new_v) if new_v else ""
